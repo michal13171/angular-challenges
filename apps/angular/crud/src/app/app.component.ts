@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { take, timer } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  finalize,
+  retry,
+  takeUntil,
+  throttleTime,
+} from 'rxjs';
 import { Todo } from './todo';
 import { TodoService } from './todo.service';
 
@@ -10,15 +17,22 @@ import { TodoService } from './todo.service';
   imports: [CommonModule, MatProgressSpinnerModule],
   selector: 'app-root',
   template: `
-    <mat-progress-spinner
-      mode="indeterminate"
-      value="100"
-      *ngIf="loading"></mat-progress-spinner>
-    <div *ngFor="let todo of todos">
-      {{ todo.title }}
-      <button (click)="update(todo)">Update</button>
-      <button (click)="delete(todo.id)">Delete</button>
-    </div>
+    @defer (when loading) {
+      @for (todo of todos$ | async; track $index) {
+        <div>
+          {{ todo.title }} |
+          <button (click)="update(todo)">Update</button>
+          |
+          <button (click)="delete(todo.id)">Delete</button>
+        </div>
+      }
+    } @loading (minimum 3000) {
+      <mat-progress-spinner
+        mode="indeterminate"
+        value="100"></mat-progress-spinner>
+    } @error {
+      <p>There was a problem to load component.</p>
+    }
   `,
   styles: [
     `
@@ -34,42 +48,44 @@ import { TodoService } from './todo.service';
     `,
   ],
 })
-export class AppComponent implements OnInit {
-  todos!: Todo[];
-  loading: boolean = true;
+export class AppComponent implements OnInit, OnDestroy {
+  loading = signal(true);
+  todoSubject$: Subject<Todo[]> = new Subject();
+  todos$: Observable<Todo[]> = this.todoService.todos$;
 
   constructor(private todoService: TodoService) {}
 
   endLoader(): void {
-    timer(3000)
-      .pipe(take(1))
-      .subscribe(() => (this.loading = false));
+    this.loading.set(false);
   }
 
   ngOnInit(): void {
-    this.todoService.getAllTodos().subscribe({
-      next: (todos) => {
-        this.loading = true;
-        this.todos = todos;
-      },
-      complete: () => this.endLoader(),
-    });
+    this.todoService
+      .getAllTodos()
+      .pipe(
+        takeUntil(this.todoSubject$),
+        retry(2),
+        finalize(() => this.endLoader()),
+      )
+      .subscribe();
   }
 
   update(todo: Todo) {
-    this.todoService.updateSingleTodo(todo).subscribe({
-      complete: () => this.endLoader(),
-      next: (todoUpdated: Todo) => {
-        this.loading = true;
-        this.todos[todoUpdated.id - 1] = todoUpdated;
-      },
-    });
+    this.todoService
+      .updateSingleTodo(todo)
+      .pipe(throttleTime(500), retry(2), takeUntil(this.todoSubject$))
+      .subscribe();
   }
 
   delete(id: number) {
-    this.todoService.removeSingleTodo(id).subscribe({
-      next: () => (this.loading = true),
-      complete: () => this.endLoader(),
-    });
+    this.todoService
+      .removeSingleTodo(id)
+      .pipe(takeUntil(this.todoSubject$), throttleTime(500))
+      .subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.todoSubject$.next([]);
+    this.todoSubject$.complete();
   }
 }
