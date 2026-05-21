@@ -1,14 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {
-  Observable,
-  Subject,
-  finalize,
-  retry,
-  takeUntil,
-  throttleTime,
-} from 'rxjs';
+import { BehaviorSubject, finalize, retry, tap } from 'rxjs';
 import { Todo } from './todo';
 import { TodoService } from './todo.service';
 
@@ -17,8 +11,8 @@ import { TodoService } from './todo.service';
   imports: [CommonModule, MatProgressSpinnerModule],
   selector: 'app-root',
   template: `
-    @defer (when loading) {
-      @for (todo of todos$ | async; track $index) {
+    @defer (when !loading()) {
+      @for (todo of todos(); track todo.id) {
         <div>
           {{ todo.title }} |
           <button (click)="update(todo)">Update</button>
@@ -26,10 +20,10 @@ import { TodoService } from './todo.service';
           <button (click)="delete(todo.id)">Delete</button>
         </div>
       }
-    } @loading (minimum 3000) {
+    } @loading (minimum 1000) {
       <mat-progress-spinner
         mode="indeterminate"
-        value="100"></mat-progress-spinner>
+        value="50"></mat-progress-spinner>
     } @error {
       <p>There was a problem to load component.</p>
     }
@@ -48,12 +42,12 @@ import { TodoService } from './todo.service';
     `,
   ],
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
+  private todoService = inject(TodoService);
+  private readonly todosSubject$ = new BehaviorSubject<Todo[]>([]);
+  readonly todos = signal<Todo[]>([]);
   loading = signal(true);
-  todoSubject$: Subject<Todo[]> = new Subject();
-  todos$: Observable<Todo[]> = this.todoService.todos$;
-
-  constructor(private todoService: TodoService) {}
+  private subject$ = inject(DestroyRef);
 
   endLoader(): void {
     this.loading.set(false);
@@ -63,9 +57,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.todoService
       .getAllTodos()
       .pipe(
-        takeUntil(this.todoSubject$),
+        takeUntilDestroyed(this.subject$),
         retry(2),
         finalize(() => this.endLoader()),
+        tap((todos) => this.todos.set(todos)),
       )
       .subscribe();
   }
@@ -73,19 +68,28 @@ export class AppComponent implements OnInit, OnDestroy {
   update(todo: Todo) {
     this.todoService
       .updateSingleTodo(todo)
-      .pipe(throttleTime(500), retry(2), takeUntil(this.todoSubject$))
+      .pipe(
+        takeUntilDestroyed(this.subject$),
+        tap((updatedTodo) => {
+          this.todos.update((current) =>
+            current.map((t) => (t.id === updatedTodo.id ? updatedTodo : t)),
+          );
+        }),
+      )
       .subscribe();
   }
 
   delete(id: number) {
     this.todoService
       .removeSingleTodo(id)
-      .pipe(takeUntil(this.todoSubject$), throttleTime(500))
+      .pipe(
+        takeUntilDestroyed(this.subject$),
+        tap(() => {
+          const current = this.todosSubject$.value;
+          this.todosSubject$.next(current.filter((t) => t.id !== id));
+          this.todos.update((current) => current.filter((t) => t.id !== id));
+        }),
+      )
       .subscribe();
-  }
-
-  ngOnDestroy(): void {
-    this.todoSubject$.next([]);
-    this.todoSubject$.complete();
   }
 }
