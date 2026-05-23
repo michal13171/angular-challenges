@@ -17,6 +17,7 @@ import { RouterLink, RouterModule } from '@angular/router';
       Test
     </button>
     <button routerLink="/">HOME</button>
+
     <router-outlet></router-outlet>
   `,
 })
