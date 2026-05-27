@@ -1,9 +1,60 @@
-import { Component } from '@angular/core';
+import {
+  animate,
+  keyframes,
+  query,
+  stagger,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import { Component, signal } from '@angular/core';
 
 @Component({
   standalone: true,
-  imports: [],
   selector: 'app-root',
+  animations: [
+    trigger('fadeInLeft', [
+      transition(':enter', [
+        animate(
+          '500ms ease-out',
+          keyframes([
+            style({
+              opacity: 0,
+              transform: 'translateX(-30px)',
+              offset: 0,
+            }),
+            style({
+              opacity: 1,
+              transform: 'translateX(0)',
+              offset: 1,
+            }),
+          ]),
+        ),
+      ]),
+    ]),
+    trigger('listStagger', [
+      transition('* => *', [
+        query(
+          '.list-item',
+          [style({ opacity: 0, transform: 'translateX(-100px)' })],
+          { optional: true },
+        ),
+
+        query(
+          '.list-item',
+          [
+            stagger('500ms', [
+              animate(
+                '500ms ease-out',
+                style({ opacity: 1, transform: 'translateX(0)' }),
+              ),
+            ]),
+          ],
+          { optional: true },
+        ),
+      ]),
+    ]),
+  ],
   styles: `
     section {
       @apply flex flex-1 flex-col gap-5;
@@ -19,7 +70,7 @@ import { Component } from '@angular/core';
   `,
   template: `
     <div class="mx-20 my-40 flex gap-5">
-      <section>
+      <section [@fadeInLeft]="toggleFade()">
         <div>
           <h3>2008</h3>
           <p>
@@ -51,7 +102,7 @@ import { Component } from '@angular/core';
         </div>
       </section>
 
-      <section>
+      <section [@listStagger]="true">
         <div class="list-item">
           <span>Name:</span>
           <span>Samuel</span>
@@ -85,4 +136,9 @@ import { Component } from '@angular/core';
     </div>
   `,
 })
-export class AppComponent {}
+export class AppComponent {
+  toggleFade = signal({
+    value: '',
+    params: { duration: '0.8s', delay: '0.2s' },
+  });
+}
