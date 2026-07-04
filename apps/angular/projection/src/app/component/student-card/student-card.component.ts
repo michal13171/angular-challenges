@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FakeHttpService } from '../../data-access/fake-http.service';
 import { StudentStore } from '../../data-access/student.store';
 import { CardType } from '../../model/card.model';
@@ -8,24 +8,16 @@ import { CardComponent } from '../../ui/card/card.component';
 @Component({
   selector: 'app-student-card',
   template: `
-    <app-card
-      [list]="students"
-      [type]="cardType"
-      [image]="image"
-      customClass="bg-light-green"></app-card>
+    <app-card></app-card>
   `,
   standalone: true,
-  styles: [
-    `
-      ::ng-deep .bg-light-green {
-        background-color: rgba(0, 250, 0, 0.1);
-      }
-    `,
-  ],
   imports: [CardComponent],
 })
-export class StudentCardComponent implements OnInit {
-  students: Student[] = [];
+export class StudentCardComponent implements OnInit, AfterViewInit {
+  @ViewChild(CardComponent)
+  item!: CardComponent;
+
+  private students: Student[] = [];
   cardType = CardType.STUDENT;
   image = 'student.webp';
 
@@ -37,6 +29,25 @@ export class StudentCardComponent implements OnInit {
   ngOnInit(): void {
     this.http.fetchStudents$.subscribe((s) => this.store.addAll(s));
 
-    this.store.students$.subscribe((s) => (this.students = s));
+    this.store.students$.subscribe((s) => {
+      this.students = s;
+
+      if (this.item) {
+        this.updateCard();
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.updateCard();
+  }
+
+  private updateCard(): void {
+    this.item.setData(
+      this.students,
+      this.cardType,
+      this.image,
+      'bg-light-green',
+    );
   }
 }

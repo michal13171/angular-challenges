@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CityStore } from '../../data-access/city.store';
 import { StudentStore } from '../../data-access/student.store';
 import { TeacherStore } from '../../data-access/teacher.store';
@@ -17,9 +17,9 @@ import { CardType } from '../../model/card.model';
   standalone: true,
 })
 export class ListItemComponent {
-  @Input() id!: number;
-  @Input() name!: string;
-  @Input() type!: CardType;
+  id: number = 0;
+  name: string = '';
+  type!: CardType;
 
   constructor(
     private teacherStore: TeacherStore,
