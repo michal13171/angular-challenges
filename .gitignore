@@ -41,3 +41,15 @@ Thumbs.db
 
 TODO.md
 .nx/cache
+.nx/workspace-data
+
+.cursorrules
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+package-lock.json
+npm-shrinkwrap.json
+
+__screenshots__/
+
+vite.config.*.timestamp*

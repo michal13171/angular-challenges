@@ -7,10 +7,13 @@ contributors:
 challengeNumber: 1
 command: angular-projection
 blogLink: https://medium.com/@thomas.laforge/create-a-highly-customizable-component-cc3a9805e4c5
-videoLink:
-  link: https://www.youtube.com/watch?v=npyEyUZxoIw&ab_channel=ArthurLannelucq
-  alt: Projection video by Arthur Lannelucq
-  flag: FR
+videoLinks:
+  - link: https://www.youtube.com/watch?v=npyEyUZxoIw&ab_channel=ArthurLannelucq
+    alt: Projection video by Arthur Lannelucq
+    flag: FR
+  - link: https://www.youtube.com/watch?v=yNrfvu7vTa4
+    alt: Projection video by Amos Lucian Isaila
+    flag: ES
 sidebar:
   order: 1
 ---
@@ -19,9 +22,9 @@ sidebar:
 
 Проекция контента в Angular - это мощная техника для создания компонентов с гибко настраиваемым внешним видом. Понимание и использование концепций <b>ng-content</b> и <b>ngTemplateOutlet</b> может значительно вам помочь создавать компоненты, предназначенные для повторного использования.
 
-[Здесь](https://angular.io/guide/content-projection#projecting-content-in-more-complex-environments) вы можете изучить все о <b>ng-content</b>, начиная с простых примеров и до более сложных.
+[Здесь](https://angular.dev/guide/components/content-projection) вы можете изучить все о <b>ng-content</b>, начиная с простых примеров и до более сложных.
 
-Документацию <b>ngTemplateOutlet</b>t, вместе с базовыми примерами, можно найти [тут](https://angular.io/api/common/NgTemplateOutlet).
+Документацию <b>ngTemplateOutlet</b>t, вместе с базовыми примерами, можно найти [тут](https://angular.dev/api/common/NgTemplateOutlet).
 
 Имея эти два инструмента в своем распоряжении, вы теперь готовы пройти испытание.
 

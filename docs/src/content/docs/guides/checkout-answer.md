@@ -5,25 +5,28 @@ contributors:
   - tomalaforge
   - gsgonzalez88
   - 1fbr
+  - jdegand
 sidebar:
   order: 3
 ---
 
-All Angular Challenges answers will be presented in the form of a Pull Request (PR). To view and follow them, navigate through the **Files Changes** page on GitHub. However, understanding and following this process may not be straightforward if you are not familiar with the interface. In many cases, you may prefer to check out the branch and review the solution in your preferred IDE.
+All Angular Challenges answers will be presented in the form of a pull request (PR). To view and follow them, navigate through the **Files Changes** page on GitHub. However, understanding and following this process may not be straightforward if you are not familiar with the interface. In many cases, you may prefer to check out the branch and review the solution in your preferred IDE.
 
-This guide has been created to help you in achieving this.
+## Install the GitHub CLI
+
+Follow the instructions for your operating system [here](https://github.com/cli/cli#installation).
 
 ## Checkout a PR locally from someone else
 
 ### Sync your repository
 
-First you need to synchronize your fork to ensure it is up to date with the forked repository.
+First, you need to synchronize your fork to ensure it is up-to-date with the forked repository.
 
-This can be archieved by clicking the **Sync fork** button on the main page of your fork.
+This can be achieved by clicking the **Sync fork** button on the main page of your fork.
 
 ![Sync project header](../../../assets/fork-sync.png)
 
-The image above shows that my branch is behind of the main branch by 8 commits, and I need to synchronize it to be up to date.
+The image above shows that my branch is behind the main branch by 8 commits, and I need to synchronize it to be up to date.
 
 ![Sync project update modal](../../../assets/sync-fork-update.png)
 
@@ -49,4 +52,6 @@ If the command doesn't work or fails, GitHub CLI will guide you through the proc
 
 🔥 You can now navigate through the solution locally and serve it to test it. 🔥
 
-<!-- gh repo set-default -->
+### Checkout with GitHub Codespaces
+
+You can checkout any **open** PR with GitHub Codespaces. After clicking the code button, you can navigate to the codespaces tab and click the green button to create a codespace on the PR's branch. After the codespace initializes, you can serve the app.

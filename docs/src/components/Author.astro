@@ -6,10 +6,11 @@ interface Props {
   twitter?: string;
   linkedin?: string;
   github?: string;
+  youtube?: string;
   labels?: Record<string, string>;
 }
 
-const { name, twitter, linkedin, github, data } = Astro.props;
+const { name, twitter, linkedin, github, youtube, data } = Astro.props;
 ---
 
 <p class="author">
@@ -23,6 +24,9 @@ const { name, twitter, linkedin, github, data } = Astro.props;
   {github && <a href={github}>
     <Icon class="icon" name="github" size="0.75rem" />
   </a>}
+  {youtube && <a href={youtube}>
+    <Icon class="icon" name="youtube" size="0.75rem" />
+  </a>}
 
 </p>
 
@@ -31,9 +35,9 @@ const { name, twitter, linkedin, github, data } = Astro.props;
     display: flex;
     gap: 0.5rem;
     align-items: center;
-    margin-top: -1rem;
     font-size: var(--sl-text-xs);
     color: var(--sl-color-gray-3);
+    width: max-content;
   }
 
   .icon {

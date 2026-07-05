@@ -24,9 +24,15 @@ If you are unsure of your `APPLICATION_NAME`, open the README.md file. The `serv
 :::
 
 :::note
-If `nx` is installed globally on your device, you can skip using `npx`.
+If `nx` is installed globally on your device, you can skip using `pnpm exec`.
 
 To install `nx` globally, run
+
+```bash
+pnpm add -g nx
+```
+
+or
 
 ```bash
 npm i -g nx
@@ -84,12 +90,19 @@ In the description section, you can add questions, troubles you encountered, or 
 
 You can now click on <span class="github-success-btn">Create pull request</span>.
 
-I will read and comment on it <b>when I have some free time.</b>
+## Get a review
 
-<p class="important-block">Don't worry if your answer is not reviewed immediately. I'm doing it for <b>free</b> and during my <b>free time</b>. If you want to support me, you can do so by <a href="https://github.com/sponsors/tomalaforge">sponsoring me on GitHub</a>. It will validate that my work is of great help for you or your team.</p>
+To continue providing valuable feedback and reviews, <a href="https://github.com/sponsors/tomalaforge">support the project on Github</a>:
+
+<ul>
+<li>$5 per review</li>
+<li>$30 for lifetime reviews</li>
+</ul>
 
 :::note
-Everyone is welcome to comment and read other PRs.
+You should still submit your PR to join the list of answered challenges. And you can still be reviewed by a community member. 🔥
+
+Everyone is welcome to comment and read other PRs. 💪
 :::
 
 :::tip[OSS champion]

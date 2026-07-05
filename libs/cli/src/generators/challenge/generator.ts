@@ -3,16 +3,8 @@ import {
   E2eTestRunner,
   UnitTestRunner,
 } from '@nx/angular/generators';
-import {
-  formatFiles,
-  generateFiles,
-  names,
-  Tree,
-  updateJson,
-} from '@nx/devkit';
-import { Linter } from '@nx/eslint';
+import { formatFiles, generateFiles, Tree, updateJson } from '@nx/devkit';
 import { join } from 'path';
-import { getProjectDir } from '../../utils/normalize';
 import { langMapper } from './files/lang-mapper';
 import { Schema } from './schema';
 
@@ -40,37 +32,37 @@ function findPreviousChallengeFilePath(tree, path, number) {
 }
 
 export async function challengeGenerator(tree: Tree, options: Schema) {
-  const { appProjectName, appDirectory } = getProjectDir(
-    options.name,
-    `apps/${options.category}`,
+  const challengeNumberPath = 'challenge-number.json';
+  const challengeNumberJson = JSON.parse(
+    tree.read(challengeNumberPath).toString(),
   );
+  const challengeNumber =
+    options.challengeNumber ?? challengeNumberJson.total + 1;
 
   const difficulty = options.challengeDifficulty;
 
+  const name = options.title.toLowerCase().split(' ').join('-');
+
+  const order = challengeNumberJson[difficulty] + 1;
+
+  const appProjectName = `${options.category}-${name}`;
+  const appDirectory = `apps/${options.category}/${challengeNumber}-${name}`;
+
   await applicationGenerator(tree, {
     ...options,
-    name: `${options.category}-${options.name}`,
-    directory: `apps/${options.category}/${options.name}`,
+    name: `${options.category}-${name}`,
+    directory: appDirectory,
     style: 'scss',
     routing: false,
     inlineStyle: true,
     inlineTemplate: true,
     prefix: 'app',
-    unitTestRunner: options.addTest ? UnitTestRunner.Jest : UnitTestRunner.None,
+    unitTestRunner: UnitTestRunner.None,
     e2eTestRunner: E2eTestRunner.None,
-    linter: Linter.EsLint,
+    linter: 'eslint',
     addTailwind: true,
-    standalone: true,
     skipTests: true,
-    projectNameAndRootFormat: 'as-provided',
   });
-
-  const challengeNumberPath = 'challenge-number.json';
-  const challengeNumberJson = JSON.parse(
-    tree.read(challengeNumberPath).toString(),
-  );
-  const challengeNumber = challengeNumberJson.total + 1;
-  const order = challengeNumberJson[difficulty] + 1;
 
   generateFiles(tree, join(__dirname, 'files', 'app'), appDirectory, {
     tmpl: '',
@@ -79,12 +71,27 @@ export async function challengeGenerator(tree: Tree, options: Schema) {
 
   generateFiles(tree, join(__dirname, 'files', 'readme'), appDirectory, {
     tmpl: '',
-    projectName: names(options.name).name,
+    projectName: name,
     appProjectName,
     title: options.title,
     challengeNumber,
     category: options.category,
   });
+
+  const authorFile = tree.read(
+    `./docs/src/content/authors/${options.author}.json`,
+  );
+  if (!authorFile) {
+    generateFiles(
+      tree,
+      join(__dirname, 'files', 'author'),
+      `./docs/src/content/authors/`,
+      {
+        tmpl: '',
+        authorName: options.author,
+      },
+    );
+  }
 
   generateFiles(
     tree,
@@ -92,7 +99,7 @@ export async function challengeGenerator(tree: Tree, options: Schema) {
     `./docs/src/content/docs/challenges/${options.category}`,
     {
       tmpl: '',
-      projectName: names(options.name).name,
+      projectName: name,
       appProjectName,
       author: options.author,
       title: options.title,
@@ -105,6 +112,19 @@ export async function challengeGenerator(tree: Tree, options: Schema) {
   if (options.addTest) {
     generateFiles(tree, join(__dirname, 'files', 'test'), appDirectory, {
       tmpl: '',
+    });
+    updateJson(tree, join(appDirectory, 'tsconfig.json'), (json) => {
+      const references = json.references ?? [];
+      const hasSpecReference = references.some(
+        (ref: any) => ref.path === './tsconfig.spec.json',
+      );
+
+      if (!hasSpecReference) {
+        references.push({ path: './tsconfig.spec.json' });
+      }
+
+      json.references = references;
+      return json;
     });
   }
 
@@ -120,7 +140,9 @@ export async function challengeGenerator(tree: Tree, options: Schema) {
 
   for (const lang of ['en', 'es', 'fr', 'pt', 'ru']) {
     const docs = tree
-      .read(`./docs/src/content/docs/${lang === 'en' ? '' : lang}/index.mdx`)
+      .read(
+        `./docs/src/content/docs/${lang === 'en' ? '' : `${lang}/`}index.mdx`,
+      )
       .toString();
 
     const regex = new RegExp(
@@ -138,29 +160,29 @@ export async function challengeGenerator(tree: Tree, options: Schema) {
     );
     const replacedLink = replaced.replace(
       linkRegex,
-      `link: /${lang}/challenges/${options.category}/${challengeNumber}-${
-        names(options.name).name
-      }/\n`,
+      `link: /${lang}/challenges/${options.category}/${challengeNumber}-${name}/\n`,
     );
 
     tree.write(
-      `./docs/src/content/docs/${lang === 'en' ? '' : lang}/index.mdx`,
+      `./docs/src/content/docs/${lang === 'en' ? '' : `${lang}/`}index.mdx`,
       replacedLink,
     );
   }
 
-  const previousChallengeFilePath = findPreviousChallengeFilePath(
-    tree,
-    `./docs/src/content/docs/challenges`,
-    String(challengeNumber - 1),
-  );
+  if (!options.challengeNumber) {
+    const previousChallengeFilePath = findPreviousChallengeFilePath(
+      tree,
+      `./docs/src/content/docs/challenges`,
+      String(Number(challengeNumber) - 1),
+    );
 
-  const previousChallenge = tree.read(previousChallengeFilePath).toString();
+    const previousChallenge = tree.read(previousChallengeFilePath).toString();
 
-  tree.write(
-    previousChallengeFilePath,
-    previousChallenge.replace(`badge: New`, ``),
-  );
+    tree.write(
+      previousChallengeFilePath,
+      previousChallenge.replace(`badge: New`, ``),
+    );
+  }
 
   updateJson(tree, challengeNumberPath, (json) => {
     json.total += 1;

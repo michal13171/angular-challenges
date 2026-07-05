@@ -8,6 +8,7 @@ const authors = defineCollection({
     twitter: z.string().url().optional(),
     linkedin: z.string().url().optional(),
     github: z.string().url().optional(),
+    youtube: z.string().url().optional(),
   }),
 });
 
@@ -21,12 +22,14 @@ const docs = defineCollection({
         contributors: z.array(z.string()).optional(),
         command: z.string().optional(),
         blogLink: z.string().optional(),
-        videoLink: z
-          .object({
-            link: z.string(),
-            alt: z.string(),
-            flag: z.enum(['FR']).optional(),
-          })
+        videoLinks: z
+          .array(
+            z.object({
+              link: z.string(),
+              alt: z.string(),
+              flag: z.enum(['FR', 'ES']).optional(),
+            }),
+          )
           .optional(),
       }),
     })(ctx),
@@ -60,6 +63,8 @@ const i18n = defineCollection({
         'subscription.note.description': z.string(),
         'contributor.title': z.string(),
         'contributor.subtitle': z.string(),
+        'sponsors.description': z.string(),
+        'sponsors.joinButton': z.string(),
       })
       .partial(),
   }),

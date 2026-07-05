@@ -1,6 +1,6 @@
 import { TOKEN } from '@angular-challenges/module-to-standalone/core/providers';
 import { AuthorizationService } from '@angular-challenges/module-to-standalone/core/service';
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 @Component({
   selector: 'lib-home',
@@ -20,10 +20,9 @@ import { Component, Inject } from '@angular/core';
 
     <section>LoadedToken {{ token }}</section>
   `,
+  standalone: false,
 })
 export class HomeComponent {
-  constructor(
-    public authorizeService: AuthorizationService,
-    @Inject(TOKEN) public token: string,
-  ) {}
+  public authorizeService = inject(AuthorizationService);
+  public token = inject(TOKEN);
 }

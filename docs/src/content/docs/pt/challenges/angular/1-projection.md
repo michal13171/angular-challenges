@@ -7,10 +7,13 @@ contributors:
 challengeNumber: 1
 command: angular-projection
 blogLink: https://medium.com/@thomas.laforge/create-a-highly-customizable-component-cc3a9805e4c5
-videoLink:
-  link: https://www.youtube.com/watch?v=npyEyUZxoIw&ab_channel=ArthurLannelucq
-  alt: Vídeo de projeção por Arthur Lannelucq
-  flag: FR
+videoLinks:
+  - link: https://www.youtube.com/watch?v=npyEyUZxoIw&ab_channel=ArthurLannelucq
+    alt: Projection video by Arthur Lannelucq
+    flag: FR
+  - link: https://www.youtube.com/watch?v=yNrfvu7vTa4
+    alt: Projection video by Amos Lucian Isaila
+    flag: ES
 sidebar:
   order: 1
 ---
@@ -19,9 +22,9 @@ sidebar:
 
 Em Angular, projeção de conteúdo é uma técnica robusta para criar componente altamente personalizados. Usar e entender os conceitos do <b>ng-content</b> e <b>ngTemplateOutlet</b> pode melhorar significativamente sua habilidade na criação de componentes compartilháveis.
 
-Você pode aprender tudo sobre <b>ng-content</b> [aqui](https://angular.io/guide/content-projection#projecting-content-in-more-complex-environments), desde projeção simples até casos mais complexos.
+Você pode aprender tudo sobre <b>ng-content</b> [aqui](https://angular.dev/guide/components/content-projection), desde projeção simples até casos mais complexos.
 
-Para aprender sobre <b>ngTemplateOutlet</b>, você pode acessar a documentação [aqui](https://angular.io/api/common/NgTemplateOutlet) junto a alguns exemplos básicos.
+Para aprender sobre <b>ngTemplateOutlet</b>, você pode acessar a documentação [aqui](https://angular.dev/api/common/NgTemplateOutlet) junto a alguns exemplos básicos.
 
 Com essas duas ferramentas em mãos, você está pronto para realizar o desafio.
 
