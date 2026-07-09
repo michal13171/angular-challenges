@@ -10,5 +10,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     class: 'border border-blue-700 bg-blue-400 p-2 rounded-sm text-white',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class ButtonComponent {}

@@ -14,8 +14,9 @@ import {
 import { UserStore } from './user.store';
 
 @Component({
-  imports: [InformationComponent, RouterLink, ButtonComponent],
   selector: 'app-login',
+  standalone: true,
+  imports: [InformationComponent, RouterLink, ButtonComponent],
   template: `
     <header class="flex items-center gap-3">
       Log as :
