@@ -3,6 +3,7 @@ import { Directive, DoCheck, ElementRef, inject, NgZone } from '@angular/core';
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[cd-flash]',
+  standalone: true,
 })
 export class CDFlashingDirective implements DoCheck {
   private readonly elementRef = inject(ElementRef);
