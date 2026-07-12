@@ -5,6 +5,7 @@ import { PersonListComponent } from './person-list.component';
 @Component({
   imports: [PersonListComponent],
   selector: 'app-root',
+  standalone: true,
   template: `
     <p>Performance is key!!</p>
     <button
