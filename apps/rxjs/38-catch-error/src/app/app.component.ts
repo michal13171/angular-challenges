@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Subject, concatMap, map } from 'rxjs';
+import { Subject, catchError, map, of, switchMap } from 'rxjs';
 
 @Component({
   imports: [CommonModule, FormsModule],
@@ -27,6 +27,7 @@ import { Subject, concatMap, map } from 'rxjs';
     </div>
   `,
   styleUrls: ['./app.component.css'],
+  standalone: true,
 })
 export class AppComponent implements OnInit {
   submit$ = new Subject<void>();
@@ -40,8 +41,13 @@ export class AppComponent implements OnInit {
     this.submit$
       .pipe(
         map(() => this.input),
-        concatMap((value) =>
-          this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`),
+        switchMap((value) =>
+          this.http.get(`https://jsonplaceholder.typicode.com/${value}/1`).pipe(
+            catchError((error) => {
+              console.log('error', error);
+              return of(error);
+            }),
+          ),
         ),
         takeUntilDestroyed(this.destroyRef),
       )
