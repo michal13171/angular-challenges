@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { UserComponent } from './user.component';
 
 @Component({
@@ -6,28 +6,28 @@ import { UserComponent } from './user.component';
   selector: 'app-root',
   template: `
     <div class="flex flex-col gap-3">
-      <div class="flex gap-2 ">
+      <div class="flex gap-2">
         Name:
         <input #name class="border" />
-        @if (showUser && !name.value) {
+        @if (showUser() && !name.value) {
           <div class="text-sm text-red-500">name required</div>
         }
       </div>
-      <div class="flex gap-2 ">
+      <div class="flex gap-2">
         LastName:
         <input #lastName class="border" />
       </div>
-      <div class="flex gap-2 ">
+      <div class="flex gap-2">
         Age:
         <input type="number" #age class="border" />
       </div>
       <button
-        (click)="showUser = true"
+        (click)="clickSubmit($event, true)"
         class="w-fit rounded-md border border-blue-500 bg-blue-200 px-4 py-2">
         Submit
       </button>
     </div>
-    @if (showUser && !!name.value) {
+    @if (showUser() && !!name.value) {
       <app-user
         [name]="name.value"
         [lastName]="lastName.value"
@@ -37,7 +37,19 @@ import { UserComponent } from './user.component';
   host: {
     class: 'p-10 block flex flex-col gap-10',
   },
+  standalone: true,
 })
-export class AppComponent {
-  showUser = false;
+export class AppComponent implements OnInit {
+  showUser = signal(false);
+
+  ngOnInit(): void {
+    this.showUser.set(false);
+    console.log('showUser', this.showUser());
+  }
+
+  clickSubmit($event: PointerEvent, condition: boolean): void {
+    $event.preventDefault();
+
+    this.showUser.set(condition);
+  }
 }
