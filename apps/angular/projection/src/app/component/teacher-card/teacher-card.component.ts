@@ -12,7 +12,7 @@ import { CardComponent } from '../../ui/card/card.component';
       [list]="teachers"
       [type]="cardType"
       [image]="image"
-      customClass="bg-light-red"></app-card>
+      customClass="bg-light-blue"></app-card>
   `,
   styles: [
     `
