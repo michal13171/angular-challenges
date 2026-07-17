@@ -11,7 +11,7 @@ import { ListItemComponent } from '../list-item/list-item.component';
       class="flex w-fit flex-col gap-3 rounded-md border-2 border-black p-4"
       [class]="customClass">
       <ng-template #cardContent>
-        <img src="assets/img/{{ image }}" width="200px" />
+        <img src="assets/img/{{ image }}" width="200px" alt="{{ type }} card" />
 
         <section>
           <app-list-item
