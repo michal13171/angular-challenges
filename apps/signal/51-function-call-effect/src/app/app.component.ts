@@ -13,7 +13,7 @@ import { UserService } from './user.service';
         <select
           [(ngModel)]="userService.name"
           name="name"
-          class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 ">
+          class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
           <option selected>Please choose an user</option>
           @for (user of users; track $index) {
             <option value="{{ user }}">{{ user }}</option>
@@ -21,13 +21,12 @@ import { UserService } from './user.service';
         </select>
       </form>
     </nav>
-
     <app-actions />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class AppComponent {
   protected userService = inject(UserService);
-
   protected users = ['Thomas', 'John', 'Alice', 'Bob', 'Charlie', 'David'];
 }

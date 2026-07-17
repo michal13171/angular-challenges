@@ -4,6 +4,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UserService } from './user.service';
@@ -29,16 +30,20 @@ import { UserService } from './user.service';
     </form>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class ActionsComponent {
   private userService = inject(UserService);
-  protected action = signal(undefined);
+  action = signal(undefined);
 
   protected actions = ['Create', 'Read', 'Update', 'Delete'];
 
   constructor() {
     effect(() => {
-      this.userService.log(this.action() ?? 'No action selected');
+      const action = this.action();
+      untracked(() => {
+        this.userService.log(action ?? 'No action selected');
+      });
     });
   }
 }
